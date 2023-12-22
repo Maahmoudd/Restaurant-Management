@@ -17,19 +17,17 @@ class ReservationController extends Controller
 
     public function update(UpdateReservationRequest $request, $id)
     {
-        return new ReservationResource(ReservationFacade::update($request, $id)) ??
-            response()->json(['status' => 'Not Authorized']);
+        return new ReservationResource(ReservationFacade::update($request, $id));
     }
 
     public function show(Request $request, $id)
     {
-        return new ReservationResource(ReservationFacade::show($request, $id)) ??
-            response()->json(['status' => 'Not Authorized']);
+        return new ReservationResource(ReservationFacade::show($request, $id));
     }
 
     public function cancel(Request $request, $id)
     {
-        if(ReservationFacade::cancel($request, $id));
+        if (ReservationFacade::cancel($request, $id));
         {
             return response()->json(['status' => 'canceled']);
         }

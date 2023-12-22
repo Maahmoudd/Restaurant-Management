@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PaymentRequest;
+use App\Resources\PaymentResource;
 use App\Services\Facades\PaymentFacade;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
-    public function process(Request $request)
+    public function process(PaymentRequest $request)
     {
-        return PaymentFacade::process($request);
+        return new PaymentResource(PaymentFacade::process($request));
     }
 
-    public function show(Request $request, $id)
+    public function show(PaymentRequest $request, $id)
     {
-        return PaymentFacade::show($request, $id);
+        return new PaymentResource(PaymentFacade::show($request, $id));
     }
 }

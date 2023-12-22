@@ -2,13 +2,13 @@
 
 namespace App\Services\Contracts;
 
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use App\Http\Requests\PaymentRequest;
+use App\Models\Payment;
 
 interface PaymentContract
 {
-    public function process(Request $request): JsonResponse;
+    public function process(PaymentRequest $request): Payment;
 
-    public function show(Request $request, $id): JsonResponse;
+    public function show(PaymentRequest $request, $id): Payment;
 
 }
