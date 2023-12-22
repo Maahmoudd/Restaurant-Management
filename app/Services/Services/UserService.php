@@ -2,10 +2,11 @@
 
 namespace App\Services\Services;
 
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use App\Services\Contracts\UserContract;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -13,25 +14,20 @@ use Illuminate\Validation\ValidationException;
 class UserService implements UserContract
 {
 
-    public function register($data): User
+    public function register(RegisterRequest $request): User
     {
-        $data['password'] = Hash::make($data['password']);
-        $user = User::create($data);
+        $request['password'] = Hash::make($request['password']);
+        $user = User::create($request->validated());
         return $user;
 
     }
 
-    public function login(Request $request): JsonResponse
+    public function login(LoginRequest $request): String
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
-        ]);
-
+        $credentials = $request->validated();
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            $token = $user->createToken('remember_token')->plainTextToken;
-            return response()->json(['token' => $token]);
+            return $user->createToken('remember_token')->plainTextToken;
         }
 
         throw ValidationException::withMessages([
@@ -39,10 +35,8 @@ class UserService implements UserContract
         ]);
     }
 
-    public function logout(Request $request): JsonResponse
+    public function logout()
     {
-        $request->user()->currentAccessToken()->delete();
-
-        return response()->json(['message' => 'Logged out successfully']);
+       auth()->user()->currentAccessToken()->delete();
     }
 }

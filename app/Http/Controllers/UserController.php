@@ -3,36 +3,36 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\LoginRequest;
 use App\Models\User;
-use App\Services\Facades\UserFacade;
+use App\Resources\UserResource;
+use App\Services\Services\UserService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
-    public function register(RegisterRequest $request): JsonResponse
+    protected $userService;
+    public function __construct(UserService $userService)
     {
-        $user = UserFacade::register($request->only([
-            'email',
-            'password',
-            'name'
-        ]));
-        return response()->json(['message' => 'User registered successfully', 'user' => $user], 201);
+        $this->userService = $userService;
+    }
+    public function register(RegisterRequest $request): UserResource
+    {
+        return new UserResource($this->userService->register($request));
     }
 
     /**
      * @throws ValidationException
      */
-    public function login(Request $request): JsonResponse
+    public function login(LoginRequest $request): String
     {
-        return UserFacade::login($request);
+        return $this->userService->login($request);
     }
 
-    public function logout(Request $request): JsonResponse
+    public function logout(): JsonResponse
     {
-        return UserFacade::logout($request);
+        $this->userService->logout();
+        return response()->json(['Status' => 'Logged Out']);
     }
 }

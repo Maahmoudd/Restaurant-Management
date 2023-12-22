@@ -2,15 +2,16 @@
 
 namespace App\Services\Contracts;
 
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 interface UserContract
 {
-    public function register(Request $request): User;
+    public function register(RegisterRequest $request): User;
 
-    public function login(Request $request): JsonResponse;
+    public function login(LoginRequest $request): String;
 
-    public function logout(Request $request): JsonResponse;
+    public function logout();
 }
