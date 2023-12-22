@@ -2,33 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Reservation;
+use App\Http\Requests\ReservationRequest;
+use App\Http\Requests\UpdateReservationRequest;
+use App\Resources\ReservationResource;
 use App\Services\Facades\ReservationFacade;
 use Illuminate\Http\Request;
 
 class ReservationController extends Controller
 {
-    public function create(Request $request)
+    public function create(ReservationRequest $request)
     {
-        return ReservationFacade::create($request);
+        return new ReservationResource(ReservationFacade::create($request));
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateReservationRequest $request, $id)
     {
-        return ReservationFacade::update($request, $id);
+        return new ReservationResource(ReservationFacade::update($request, $id)) ??
+            response()->json(['status' => 'Not Authorized']);
     }
 
     public function show(Request $request, $id)
     {
-        return ReservationFacade::show($request, $id);
+        return new ReservationResource(ReservationFacade::show($request, $id)) ??
+            response()->json(['status' => 'Not Authorized']);
     }
 
     public function cancel(Request $request, $id)
     {
-        return ReservationFacade::cancel($request, $id);
+        if(ReservationFacade::cancel($request, $id));
+        {
+            return response()->json(['status' => 'canceled']);
+        }
     }
     public function index(Request $request)
     {
-        return ReservationFacade::index($request);
+        return ReservationResource::collection(ReservationFacade::index($request));
     }
 }

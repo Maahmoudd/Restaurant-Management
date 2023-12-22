@@ -2,24 +2,19 @@
 
 namespace App\Services\Services;
 
+use App\Http\Requests\ReservationRequest;
+use App\Http\Requests\UpdateReservationRequest;
 use App\Models\Reservation;
 use App\Services\Contracts\ReservationContract;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 class ReservationService implements ReservationContract
 {
-    public function create(Request $request): JsonResponse
+    public function create(ReservationRequest $request): Reservation
     {
-        $validatedData = $request->validate([
-            'restaurant_id' => 'required|exists:restaurants,id',
-            'reservation_date' => 'required',
-            'party_size' => 'required|integer|min:1',
-        ]);
-
-        // Fetch authenticated user's ID
+        $validatedData = $request->validated();
         $userId = $request->user()->id;
-
         $reservationData = array_merge($validatedData, [
             'user_id' => $userId,
             'status' => Reservation::STATUS_PENDING
@@ -27,59 +22,49 @@ class ReservationService implements ReservationContract
 
         $reservation = Reservation::create($reservationData);
 
-        return response()->json(['message' => 'Reservation created successfully', 'reservation' => $reservation], 201);
+        return $reservation;
     }
 
-    public function update(Request $request, $id):JsonResponse
+    public function update(UpdateReservationRequest $request, $id): Reservation | null
+    {
+        $validatedReservationUpdate = $request->validated();
+        $reservation = Reservation::findOrFail($id);
+        if ($reservation->user_id != $request->user()->id)
+        {
+            return null;
+        }
+        $reservation->update($validatedReservationUpdate);
+        return $reservation;
+    }
+
+    public function show(Request $request, $id): Reservation
     {
         $reservation = Reservation::findOrFail($id);
 
         // Check if the authenticated user owns the reservation
         if ($reservation->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized. You do not have permission to update this reservation.'], 403);
+            return false;
         }
 
-        $validatedData = $request->validate([
-            'reservation_date' => 'required|date',
-            'party_size' => 'required|integer|min:1',
-            // Additional validation as needed
-        ]);
-
-        $reservation->update($validatedData);
-
-        return response()->json(['message' => 'Reservation updated successfully', 'reservation' => $reservation]);
+        return $reservation;
     }
 
-    public function show(Request $request, $id):JsonResponse
+    public function cancel(Request $request, $id):bool
     {
         $reservation = Reservation::findOrFail($id);
 
         // Check if the authenticated user owns the reservation
         if ($reservation->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized. You do not have permission to view this reservation.'], 403);
+            return false;
         }
 
-        return response()->json(['reservation' => $reservation]);
+        return $reservation->delete();
     }
-
-    public function cancel(Request $request, $id):JsonResponse
-    {
-        $reservation = Reservation::findOrFail($id);
-
-        // Check if the authenticated user owns the reservation
-        if ($reservation->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized. You do not have permission to cancel this reservation.'], 403);
-        }
-
-        $reservation->delete();
-
-        return response()->json(['message' => 'Reservation canceled successfully']);
-    }
-    public function index(Request $request):JsonResponse
+    public function index(Request $request): Collection
     {
         $userId = $request->user()->id;
         $reservations = Reservation::where('user_id', $userId)->get();
 
-        return response()->json(['reservations' => $reservations]);
+        return $reservations;
     }
 }
