@@ -2,6 +2,7 @@
 
 namespace App\Services\Services;
 
+use App\Exceptions\RestaurantExceptions\FullRestaurantException;
 use App\Http\Requests\ReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
 use App\Models\Reservation;
@@ -9,6 +10,7 @@ use App\Models\Restaurant;
 use App\Services\Contracts\ReservationContract;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use function Termwind\render;
 
 class ReservationService implements ReservationContract
 {
@@ -22,8 +24,8 @@ class ReservationService implements ReservationContract
         ]);
         $restaurant = Restaurant::find($reservationData['restaurant_id']);
 
-        if(!$restaurant['tables_count']){
-            return false;
+        if(!$restaurant['tables_count']) {
+            throw new FullRestaurantException();
         }
         $reservation = Reservation::create($reservationData);
         $restaurant['tables_count'] = $restaurant['tables_count'] - 1;
