@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PaymentRequest;
 use App\Resources\PaymentResource;
 use App\Services\Facades\PaymentFacade;
-use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {

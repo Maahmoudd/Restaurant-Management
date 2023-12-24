@@ -29,9 +29,7 @@ class Handler extends ExceptionHandler
         });
 
         $this->renderable(function (Throwable $e, Request $request) {
-            return response()->json([
-                'Error' => 'Invalid Creds'
-            ], 400);
+            //
         });
     }
 }
