@@ -3,6 +3,7 @@
 namespace App\Services\Services;
 
 use App\Enums\ReservationEnum;
+use App\Exceptions\PaymentExceptions\ReservationPaidException;
 use App\Http\Requests\PaymentRequest;
 use App\Models\Payment;
 use App\Models\Reservation;
@@ -18,7 +19,7 @@ class PaymentService implements PaymentContract
         $reservation = Reservation::findOrFail($validatedData['reservation_id']);
         if ($reservation->status === ReservationEnum::STATUS_PAID)
         {
-            return false;
+            throw new ReservationPaidException();
         }
         $payment = Payment::create($validatedData);
         $reservation->update(['status' => ReservationEnum::STATUS_PAID]);
