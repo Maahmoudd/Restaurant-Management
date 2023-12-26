@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Repositories\PaymentRepository;
 use App\Repositories\ReservationRepository;
 use App\Repositories\RestaurantRepository;
 use App\Repositories\UserRepository;
@@ -22,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind('PaymentService', function (){
-            return new PaymentService();
+            return new PaymentService(new PaymentRepository(), new ReservationRepository());
         });
 
         $this->app->bind('ReservationService', function (){
