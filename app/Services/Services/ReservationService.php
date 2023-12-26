@@ -6,7 +6,8 @@ use App\Exceptions\RestaurantExceptions\FullRestaurantException;
 use App\Http\Requests\ReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
 use App\Models\Reservation;
-use App\Models\Restaurant;
+use App\Repositories\ReservationRepository;
+use App\Repositories\RestaurantRepository;
 use App\Services\Contracts\ReservationContract;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -14,6 +15,15 @@ use Illuminate\Support\Facades\DB;
 
 class ReservationService implements ReservationContract
 {
+    protected $restaurantRepository;
+    protected $reservationRepository;
+
+    public function __construct(ReservationRepository $reservationRepository, RestaurantRepository $restaurantRepository)
+    {
+        $this->reservationRepository = $reservationRepository;
+        $this->restaurantRepository = $restaurantRepository;
+    }
+
     public function create(ReservationRequest $request): Reservation
     {
         $validatedData = $request->validated();
@@ -24,14 +34,14 @@ class ReservationService implements ReservationContract
             'status' => Reservation::STATUS_PENDING,
         ]);
 
-        $restaurant = Restaurant::findOrFail($reservationData['restaurant_id']);
+        $restaurant = $this->restaurantRepository->findById($reservationData['restaurant_id']);
 
         $reservation = DB::transaction(function () use ($reservationData, $restaurant) {
             if ($restaurant->tables_count === 0) {
                 throw new FullRestaurantException('The restaurant is full.');
             }
 
-            $reservation = Reservation::create($reservationData);
+            $reservation = $this->reservationRepository->create($reservationData);
 
             $restaurant->decrement('tables_count');
 
@@ -43,7 +53,7 @@ class ReservationService implements ReservationContract
     public function update(UpdateReservationRequest $request, $id): Reservation | null
     {
         $validatedReservationUpdate = $request->validated();
-        $reservation = Reservation::findOrFail($id);
+        $reservation = $this->reservationRepository->findById($id);
         if ($reservation->user_id != $request->user()->id)
         {
             return null;
@@ -56,7 +66,6 @@ class ReservationService implements ReservationContract
     {
         $reservation = Reservation::findOrFail($id);
 
-        // Check if the authenticated user owns the reservation
         if ($reservation->user_id !== $request->user()->id) {
             return false;
         }
@@ -66,13 +75,13 @@ class ReservationService implements ReservationContract
 
     public function cancel(Request $request, $id):bool
     {
-        $reservation = Reservation::findOrFail($id);
+        $reservation = $this->reservationRepository->findById($id);
 
         if ($reservation->user_id !== $request->user()->id) {
             return false;
         }
 
-        $restaurant = Restaurant::find($reservation->restaurant_id);
+        $restaurant = $this->restaurantRepository->findById($reservation->restaurant_id);
         $restaurant['tables_count'] = $restaurant['tables_count'] + 1;
         $restaurant->save();
 
@@ -81,7 +90,7 @@ class ReservationService implements ReservationContract
     public function index(Request $request): Collection
     {
         $userId = $request->user()->id;
-        $reservations = Reservation::where('user_id', $userId)->get();
+        $reservations = $this->reservationRepository->getAllUserReservations($userId);
 
         return $reservations;
     }

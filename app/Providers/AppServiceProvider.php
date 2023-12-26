@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\ReservationRepository;
+use App\Repositories\RestaurantRepository;
 use App\Repositories\UserRepository;
 use App\Services\Services\PaymentService;
 use App\Services\Services\ReservationService;
@@ -24,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind('ReservationService', function (){
-            return new ReservationService();
+            return new ReservationService(new ReservationRepository(), new RestaurantRepository());
         });
     }
 
