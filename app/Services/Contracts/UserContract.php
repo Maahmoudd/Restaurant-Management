@@ -5,7 +5,6 @@ namespace App\Services\Contracts;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
 
 interface UserContract
 {

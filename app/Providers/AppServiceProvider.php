@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Repositories\UserRepository;
 use App\Services\Services\PaymentService;
 use App\Services\Services\ReservationService;
 use App\Services\Services\UserService;
@@ -15,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind('UserService', function (){
-            return new UserService();
+            return new UserService(new UserRepository());
         });
 
         $this->app->bind('PaymentService', function (){
