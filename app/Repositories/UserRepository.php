@@ -4,8 +4,9 @@ namespace App\Repositories;
 
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 
-class UserRepository
+class UserRepository implements UserRepositoryInterface
 {
 
     public function register(RegisterRequest $request)

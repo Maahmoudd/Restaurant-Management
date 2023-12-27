@@ -6,8 +6,8 @@ use App\Enums\ReservationEnum;
 use App\Exceptions\PaymentExceptions\ReservationPaidException;
 use App\Http\Requests\PaymentRequest;
 use App\Models\Payment;
-use App\Repositories\PaymentRepository;
-use App\Repositories\ReservationRepository;
+use App\Repositories\Interfaces\PaymentRepositoryInterface;
+use App\Repositories\Interfaces\ReservationRepositoryInterface;
 use App\Services\Contracts\PaymentContract;
 use Exception;
 
@@ -17,7 +17,7 @@ class PaymentService implements PaymentContract
     protected $paymentRepository;
     protected $reservationRepository;
 
-    public function __construct(PaymentRepository $paymentRepository, ReservationRepository $reservationRepository)
+    public function __construct(PaymentRepositoryInterface $paymentRepository, ReservationRepositoryInterface $reservationRepository)
     {
         $this->paymentRepository = $paymentRepository;
         $this->reservationRepository = $reservationRepository;

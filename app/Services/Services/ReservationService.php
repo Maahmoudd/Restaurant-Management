@@ -6,8 +6,8 @@ use App\Exceptions\RestaurantExceptions\FullRestaurantException;
 use App\Http\Requests\ReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
 use App\Models\Reservation;
-use App\Repositories\ReservationRepository;
-use App\Repositories\RestaurantRepository;
+use App\Repositories\Interfaces\ReservationRepositoryInterface;
+use App\Repositories\Interfaces\RestaurantRepositoryInterface;
 use App\Services\Contracts\ReservationContract;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -18,7 +18,7 @@ class ReservationService implements ReservationContract
     protected $restaurantRepository;
     protected $reservationRepository;
 
-    public function __construct(ReservationRepository $reservationRepository, RestaurantRepository $restaurantRepository)
+    public function __construct(ReservationRepositoryInterface $reservationRepository, RestaurantRepositoryInterface $restaurantRepository)
     {
         $this->reservationRepository = $reservationRepository;
         $this->restaurantRepository = $restaurantRepository;

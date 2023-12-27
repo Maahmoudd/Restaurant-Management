@@ -3,8 +3,9 @@
 namespace App\Repositories;
 
 use App\Models\Payment;
+use App\Repositories\Interfaces\PaymentRepositoryInterface;
 
-class PaymentRepository
+class PaymentRepository implements PaymentRepositoryInterface
 {
 
     public function create(array $paymentData)

@@ -3,9 +3,10 @@
 namespace App\Repositories;
 
 use App\Models\Reservation;
+use App\Repositories\Interfaces\ReservationRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
-class ReservationRepository
+class ReservationRepository implements ReservationRepositoryInterface
 {
 
     public function create(array $reservationData)
