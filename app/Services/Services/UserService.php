@@ -2,6 +2,7 @@
 
 namespace App\Services\Services;
 
+use App\Exceptions\UserExceptions\UserFailedLoginException;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
@@ -9,7 +10,6 @@ use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\Contracts\UserContract;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class UserService implements UserContract
 {
@@ -34,9 +34,7 @@ class UserService implements UserContract
             return $user->createToken('remember_token')->plainTextToken;
         }
 
-        throw ValidationException::withMessages([
-            'email' => ['Invalid credentials'],
-        ]);
+        throw new UserFailedLoginException();
     }
 
     public function logout()

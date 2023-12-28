@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use App\Repositories\PaymentRepository;
-use App\Repositories\ReservationRepository;
-use App\Repositories\RestaurantRepository;
-use App\Repositories\UserRepository;
+use App\Repositories\Repository\PaymentRepository;
+use App\Repositories\Repository\ReservationRepository;
+use App\Repositories\Repository\RestaurantRepository;
+use App\Repositories\Repository\UserRepository;
 use App\Services\Services\PaymentService;
 use App\Services\Services\ReservationService;
 use App\Services\Services\UserService;

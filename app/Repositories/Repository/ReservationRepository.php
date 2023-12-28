@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Repository;
 
 use App\Models\Reservation;
 use App\Repositories\Interfaces\ReservationRepositoryInterface;

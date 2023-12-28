@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Repository;
 
-use App\Http\Requests\RegisterRequest;
 use App\Models\Restaurant;
-use App\Models\User;
 use App\Repositories\Interfaces\RestaurantRepositoryInterface;
 
 class RestaurantRepository implements RestaurantRepositoryInterface
