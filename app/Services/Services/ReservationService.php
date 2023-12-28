@@ -3,6 +3,7 @@
 namespace App\Services\Services;
 
 use App\Exceptions\RestaurantExceptions\FullRestaurantException;
+use App\Exceptions\RestaurantExceptions\NotAuthorizedException;
 use App\Http\Requests\ReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
 use App\Models\Reservation;
@@ -50,13 +51,12 @@ class ReservationService implements ReservationContract
 
         return $reservation;
     }
-    public function update(UpdateReservationRequest $request, $id): Reservation | null
+    public function update(UpdateReservationRequest $request, $id): Reservation
     {
         $validatedReservationUpdate = $request->validated();
         $reservation = $this->reservationRepository->findById($id);
-        if ($reservation->user_id != $request->user()->id)
-        {
-            return null;
+        if ($reservation->user_id != $request->user()->id) {
+            throw new NotAuthorizedException();
         }
         $reservation->update($validatedReservationUpdate);
         return $reservation;
@@ -67,7 +67,7 @@ class ReservationService implements ReservationContract
         $reservation = Reservation::findOrFail($id);
 
         if ($reservation->user_id !== $request->user()->id) {
-            return false;
+            throw new NotAuthorizedException();
         }
 
         return $reservation;
@@ -78,7 +78,7 @@ class ReservationService implements ReservationContract
         $reservation = $this->reservationRepository->findById($id);
 
         if ($reservation->user_id !== $request->user()->id) {
-            return false;
+            throw new NotAuthorizedException();
         }
 
         $restaurant = $this->restaurantRepository->findById($reservation->restaurant_id);
