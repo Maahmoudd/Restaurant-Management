@@ -9,6 +9,6 @@ interface PaymentContract
 {
     public function process(PaymentRequest $request): Payment;
 
-    public function show(PaymentRequest $request, $id): Payment;
+    public function show($id): Payment;
 
 }

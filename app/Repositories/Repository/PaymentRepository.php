@@ -15,7 +15,7 @@ class PaymentRepository implements PaymentRepositoryInterface
 
     public function findById(int $id)
     {
-        return Payment::findOrFail('reservation_id', $id)->first();
+        return Payment::find($id,'reservation_id');
     }
 
 }

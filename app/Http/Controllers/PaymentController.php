@@ -13,8 +13,8 @@ class PaymentController extends Controller
         return new PaymentResource(PaymentFacade::process($request));
     }
 
-    public function show(PaymentRequest $request, $id)
+    public function show($id)
     {
-        return new PaymentResource(PaymentFacade::show($request, $id));
+        return new PaymentResource(PaymentFacade::show($id));
     }
 }

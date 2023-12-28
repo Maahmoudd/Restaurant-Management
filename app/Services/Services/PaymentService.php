@@ -4,6 +4,7 @@ namespace App\Services\Services;
 
 use App\Enums\ReservationEnum;
 use App\Exceptions\PaymentExceptions\ReservationPaidException;
+use App\Exceptions\PaymentExceptions\UnfoundPaymentException;
 use App\Http\Requests\PaymentRequest;
 use App\Models\Payment;
 use App\Repositories\Interfaces\PaymentRepositoryInterface;
@@ -38,7 +39,7 @@ class PaymentService implements PaymentContract
 
     }
 
-    public function show(PaymentRequest $request, $id): Payment
+    public function show($id): Payment
     {
         $payment = $this->paymentRepository->findById($id);
 
@@ -48,7 +49,7 @@ class PaymentService implements PaymentContract
         }
         else
         {
-            throw new Exception('No Payment Record');
+            throw new UnfoundPaymentException();
         }
     }
 }
