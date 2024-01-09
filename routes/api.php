@@ -1,32 +1,23 @@
-<?php
-
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
-});
+})->name('user');
 
-Route::post('/register', [UserController::class, 'register']);
-Route::post('/login', [UserController::class, 'login']);
+Route::post('/register', [UserController::class, 'register'])->name('register');
+Route::post('/login', [UserController::class, 'login'])->name('login');
 
-// Authenticated routes
 Route::middleware('auth:sanctum')->group(function () {
-    // Reservation routes
-    Route::post('/reservations', [ReservationController::class, 'create']);
-    Route::patch('/reservations/{id}', [ReservationController::class, 'update']);
-    Route::get('/reservations/{id}', [ReservationController::class, 'show']);
-    Route::delete('/reservations/{id}', [ReservationController::class, 'cancel']);
-    Route::get('/user/reservations', [ReservationController::class, 'index']);
+    Route::prefix('user')->group(function () {
+        Route::resource('reservations', ReservationController::class)->except(['edit', 'create']);
+    });
 
-    // Payment routes (if separate)
-    Route::post('/payments', [PaymentController::class, 'process']);
-    Route::get('/payments/{id}', [PaymentController::class, 'show']);
+    Route::post('/payments', [PaymentController::class, 'process'])->name('payments.process');
+    Route::get('/payments/{id}', [PaymentController::class, 'show'])->name('payments.show');
 
-    // Logout route
-    Route::post('/logout', [UserController::class, 'logout']);
+    Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 });
