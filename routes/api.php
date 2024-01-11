@@ -1,3 +1,4 @@
+<?php
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\UserController;
